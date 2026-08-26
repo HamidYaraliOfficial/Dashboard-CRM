@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>داشبورد مدرن CRM | نسخه جدید</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* ===== RESET & BASE ===== */
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
+    body {
+      background: #eef2f7;
+      min-height:100vh;
+      transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+      position:relative;
+      overflow-x:hidden;
+    }
+    /* ===== اسکرول ===== */
+    ::-webkit-scrollbar { width:8px; height:8px; }
+    ::-webkit-scrollbar-track { background:#e9edf4; border-radius:10px; }
+    ::-webkit-scrollbar-thumb { background:linear-gradient(180deg,#3b82f6,#60a5fa); border-radius:10px; }
+
+    /* ===== دارک مود ===== */
+    body.dark-mode {
+      background:#0f172a; color:#e8edf5;
+    }
+    body.dark-mode .header,
+    body.dark-mode .sidebar,
+    body.dark-mode .card,
+    body.dark-mode .widget,
+    body.dark-mode .table-wrap,
+    body.dark-mode .stats-card,
+    body.dark-mode .activity-card,
+    body.dark-mode .task-card,
+    body.dark-mode .team-card,
+    body.dark-mode .settings-card,
+    body.dark-mode .customize-panel,
+    body.dark-mode footer {
+      background:#1e293b; border-color:#334155; color:#e8edf5;
+    }
+    body.dark-mode .stats-card .stat-title,
+    body.dark-mode .stats-card .stat-number,
+    body.dark-mode .widget h3,
+    body.dark-mode .menu-item,
+    body.dark-mode .header-title h1,
+    body.dark-mode .header-title small,
+    body.dark-mode .activity-text,
+    body.dark-mode td,
+    body.dark-mode th,
+    body.dark-mode .task-item,
+    body.dark-mode .team-member-name {
+      color:#e8edf5;
+    }
+    body.dark-mode .menu-item.active { background:#2d3a52; color:#93c5fd; }
+    body.dark-mode .menu-item.active i { color:#93c5fd; }
+    body.dark-mode .search-box { background:#2d3a52; }
+    body.dark-mode .search-box input { color:#e8edf5; }
+    body.dark-mode .search-box input::placeholder { color:#94a3b8; }
+    body.dark-mode .chart-placeholder { background:#0f172a; color:#94a3b8; }
+    body.dark-mode .status-badge { background:#2d3a52; color:#93c5fd; }
+    body.dark-mode .status-badge.warning { background:#4d3a1a; color:#fbbf24; }
+    body.dark-mode .status-badge.secondary { background:#334155; color:#94a3b8; }
+    body.dark-mode .badge { background:#2d3a52; color:#93c5fd; }
+    body.dark-mode .divider { background:#2d3a52; }
+    body.dark-mode .lang-toggle { background:linear-gradient(135deg,#1a2538,#0b1120); }
+    body.dark-mode .settings-row { border-bottom-color:#2d3a52; }
+    body.dark-mode .toggle-switch { background:#475569; }
+    body.dark-mode .toggle-switch.active { background:#3b82f6; }
+    body.dark-mode .quick-stat { background:#0f172a; }
+    body.dark-mode .tag { background:#2d3a52; color:#93c5fd; }
+
+    /* ===== دکمه تغییر زبان ===== */
+    .lang-toggle {
+      position:fixed; top:20px; left:20px; background:linear-gradient(135deg,#1e293b,#0f172a);
+      color:#fff; border:none; padding:10px 24px; border-radius:50px; font-size:0.9rem;
+      font-weight:600; cursor:pointer; z-index:9999; box-shadow:0 8px 30px rgba(0,0,0,0.25);
+      display:flex; align-items:center; gap:10px; transition:0.3s;
+    }
+    .lang-toggle:hover { transform:scale(1.05); box-shadow:0 12px 40px rgba(0,0,0,0.35); }
+
+    /* ===== هدر جدید ===== */
+    .header {
+      background:#fff; padding:18px 35px; box-shadow:0 4px 20px rgba(0,0,0,0.03);
+      display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center;
+      border-bottom:1px solid #e9edf4; backdrop-filter:blur(10px);
+    }
+    .header-brand {
+      display:flex; align-items:center; gap:14px;
+    }
+    .header-brand .logo {
+      width:44px; height:44px; background:linear-gradient(135deg,#3b82f6,#60a5fa);
+      border-radius:14px; display:flex; align-items:center; justify-content:center;
+      color:#fff; font-size:1.4rem; font-weight:700; box-shadow:0 4px 14px rgba(59,130,246,0.3);
+    }
+    .header-brand h1 { font-size:1.6rem; font-weight:700; color:#1e293b; letter-spacing:-0.5px; }
+    .header-brand h1 span { color:#3b82f6; }
+    .header-brand small { font-size:0.75rem; color:#94a3b8; font-weight:400; display:block; }
+    .header-actions { display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+    .search-box {
+      background:#f1f5f9; border-radius:50px; padding:6px 18px; display:flex; align-items:center; gap:10px;
+      transition:0.3s; border:2px solid transparent;
+    }
+    .search-box:focus-within { border-color:#3b82f6; background:#fff; box-shadow:0 0 0 4px rgba(59,130,246,0.08); }
+    .search-box input { border:none; background:transparent; padding:8px 0; width:180px; font-size:0.9rem; outline:none; }
+    .search-box i { color:#94a3b8; }
+    .avatar {
+      width:42px; height:42px; background:linear-gradient(135deg,#8b5cf6,#a78bfa);
+      border-radius:50%; display:flex; align-items:center; justify-content:center;
+      color:#fff; font-weight:600; font-size:1rem; cursor:pointer;
+      box-shadow:0 4px 12px rgba(139,92,246,0.3);
+    }
+
+    /* ===== شبکه اصلی جدید ===== */
+    .main-grid {
+      display:grid; grid-template-columns:240px 1fr 280px;
+      gap:24px; padding:24px 32px; flex:1; max-width:1600px; margin:0 auto;
+    }
+
+    /* ===== سایدبار جدید ===== */
+    .sidebar {
+      background:#fff; border-radius:24px; padding:16px 10px;
+      box-shadow:0 8px 30px rgba(0,0,0,0.03); height:fit-content;
+      border:1px solid rgba(233,237,244,0.5);
+    }
+    .menu-item {
+      display:flex; align-items:center; gap:12px; padding:12px 16px; border-radius:14px;
+      color:#475569; transition:0.25s; cursor:pointer; margin-bottom:2px; font-weight:500;
+      position:relative;
+    }
+    .menu-item i { width:20px; font-size:1rem; color:#94a3b8; transition:0.3s; }
+    .menu-item.active {
+      background:linear-gradient(135deg,#eef2ff,#dbeafe); color:#1e4f8a;
+      box-shadow:0 4px 12px rgba(59,130,246,0.08);
+    }
+    .menu-item.active i { color:#3b82f6; }
+    .menu-item:hover { background:#f8fafc; transform:translateX(-3px); }
+    body.ltr .menu-item:hover { transform:translateX(3px); }
+    .menu-item .badge-menu {
+      position:absolute; right:12px; background:#ef4444; color:#fff; font-size:0.55rem;
+      padding:1px 10px; border-radius:40px; font-weight:700;
+    }
+    body.ltr .menu-item .badge-menu { right:auto; left:12px; }
+    .divider { height:1px; background:#e9edf4; margin:12px 12px; }
+    .menu-label { font-size:0.6rem; text-transform:uppercase; letter-spacing:1.5px; color:#94a3b8; padding:10px 16px 4px; font-weight:700; }
+
+    /* ===== تب‌ها ===== */
+    .tab-content { display:none; flex-direction:column; gap:24px; width:100%; animation:fadeIn 0.4s ease; }
+    .tab-content.active { display:flex; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ===== کارت‌های آماری جدید ===== */
+    .stats-grid {
+      display:grid; grid-template-columns:repeat(4,1fr); gap:16px;
+    }
+    .stats-card {
+      background:#fff; padding:18px 20px; border-radius:20px; border:1px solid #f1f5f9;
+      transition:all 0.3s; position:relative; overflow:hidden;
+    }
+    .stats-card:hover { transform:translateY(-4px); box-shadow:0 12px 32px rgba(0,0,0,0.05); }
+    .stats-card .stats-top { display:flex; justify-content:space-between; align-items:flex-start; }
+    .stats-card .stats-icon {
+      width:44px; height:44px; border-radius:14px; display:flex; align-items:center;
+      justify-content:center; font-size:1.2rem;
+    }
+    .stats-card .stats-icon.blue { background:#dbeafe; color:#3b82f6; }
+    .stats-card .stats-icon.green { background:#dcfce7; color:#22c55e; }
+    .stats-card .stats-icon.purple { background:#ede9fe; color:#8b5cf6; }
+    .stats-card .stats-icon.orange { background:#fef3c7; color:#f59e0b; }
+    .stats-card .stat-number { font-size:1.8rem; font-weight:700; color:#0f172a; margin-top:6px; }
+    .stats-card .stat-title { font-size:0.8rem; color:#94a3b8; font-weight:500; }
+    .stats-card .stat-change {
+      font-size:0.7rem; padding:2px 12px; border-radius:40px; font-weight:600; display:inline-block;
+    }
+    .stats-card .stat-change.up { color:#22c55e; background:#dcfce7; }
+    .stats-card .stat-change.down { color:#ef4444; background:#fecaca; }
+
+    /* ===== ویجت‌های میانی ===== */
+    .middle-widgets {
+      display:grid; grid-template-columns:2fr 1fr; gap:20px;
+    }
+    .widget {
+      background:#fff; border-radius:20px; padding:20px 24px; border:1px solid #f1f5f9;
+      transition:0.3s;
+    }
+    .widget:hover { box-shadow:0 8px 24px rgba(0,0,0,0.03); }
+    .widget h3 {
+      font-size:1rem; font-weight:600; color:#1e293b; margin-bottom:14px;
+      display:flex; align-items:center; gap:10px;
+    }
+    .chart-placeholder {
+      height:120px; display:flex; align-items:flex-end; gap:6px; padding-top:10px;
+    }
+    .chart-bar {
+      flex:1; border-radius:6px 6px 0 0; min-height:12px;
+      background:linear-gradient(180deg,#3b82f6,#60a5fa); transition:0.3s;
+    }
+    .chart-bar:hover { opacity:0.7; transform:scaleY(1.02); }
+    .chart-bar.green { background:linear-gradient(180deg,#22c55e,#4ade80); }
+    .chart-bar.purple { background:linear-gradient(180deg,#8b5cf6,#a78bfa); }
+    .chart-bar.orange { background:linear-gradient(180deg,#f59e0b,#fbbf24); }
+
+    /* ===== فعالیت‌ها ===== */
+    .activity-item {
+      display:flex; align-items:center; gap:12px; padding:10px 0;
+      border-bottom:1px solid #f1f5f9; transition:0.2s;
+    }
+    .activity-item:last-child { border-bottom:none; }
+    .activity-item:hover { padding-left:8px; }
+    body.ltr .activity-item:hover { padding-left:0; padding-right:8px; }
+    .activity-dot {
+      width:10px; height:10px; border-radius:50%; flex-shrink:0;
+    }
+    .activity-dot.blue { background:#3b82f6; }
+    .activity-dot.green { background:#22c55e; }
+    .activity-dot.orange { background:#f59e0b; }
+    .activity-dot.purple { background:#8b5cf6; }
+    .activity-dot.red { background:#ef4444; }
+    .activity-text { flex:1; font-size:0.9rem; color:#1e293b; }
+    .activity-time { font-size:0.65rem; color:#94a3b8; }
+
+    /* ===== لیست وظایف ===== */
+    .task-item {
+      display:flex; align-items:center; gap:12px; padding:8px 0;
+      border-bottom:1px solid #f1f5f9;
+    }
+    .task-item:last-child { border-bottom:none; }
+    .task-check { width:20px; height:20px; border-radius:6px; border:2px solid #cbd5e1; cursor:pointer; transition:0.2s; display:flex; align-items:center; justify-content:center; }
+    .task-check.done { background:#3b82f6; border-color:#3b82f6; color:#fff; }
+    .task-check.done i { font-size:0.6rem; }
+    .task-text { flex:1; font-size:0.9rem; color:#1e293b; }
+    .task-text.done { text-decoration:line-through; color:#94a3b8; }
+    .task-priority { font-size:0.6rem; padding:2px 10px; border-radius:40px; font-weight:600; }
+    .task-priority.high { background:#fecaca; color:#dc2626; }
+    .task-priority.medium { background:#fef3c7; color:#d97706; }
+    .task-priority.low { background:#dcfce7; color:#16a34a; }
+
+    /* ===== راست‌چین ===== */
+    .right-panel { display:flex; flex-direction:column; gap:20px; }
+    .right-panel .widget { padding:16px 18px; }
+
+    /* ===== تقویم کوچک ===== */
+    .mini-calendar .days {
+      display:grid; grid-template-columns:repeat(7,1fr); gap:4px; text-align:center;
+    }
+    .mini-calendar .days div {
+      padding:6px 0; font-size:0.75rem; border-radius:8px; transition:0.2s;
+    }
+    .mini-calendar .days div:hover { background:#f1f5f9; cursor:pointer; }
+    .mini-calendar .days div.active { background:#3b82f6; color:#fff; font-weight:600; }
+    .mini-calendar .month-label { font-size:0.8rem; font-weight:600; color:#1e293b; margin-bottom:8px; text-align:center; }
+
+    /* ===== تگ‌ها ===== */
+    .tags { display:flex; flex-wrap:wrap; gap:6px; }
+    .tag { background:#f1f5f9; padding:4px 14px; border-radius:40px; font-size:0.7rem; color:#475569; font-weight:500; }
+
+    /* ===== جدول ===== */
+    .table-wrap {
+      background:#fff; border-radius:20px; padding:16px 20px; border:1px solid #f1f5f9;
+      overflow-x:auto;
+    }
+    .table-wrap .table-header {
+      display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;
+    }
+    table { width:100%; border-collapse:collapse; font-size:0.9rem; }
+    th {
+      text-align:right; padding:12px 10px; color:#94a3b8; font-weight:600;
+      border-bottom:2px solid #e9edf4; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.5px;
+    }
+    td { padding:12px 10px; border-bottom:1px solid #f1f5f9; color:#1e293b; }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:#f8fafc; }
+    body.dark-mode tr:hover td { background:#2d3a52; }
+    .status-badge {
+      padding:3px 14px; border-radius:40px; font-size:0.65rem; font-weight:600; display:inline-block;
+    }
+    .status-badge.active { background:#dcfce7; color:#15803d; }
+    .status-badge.pending { background:#fef3c7; color:#d97706; }
+    .status-badge.inactive { background:#f1f5f9; color:#64748b; }
+    .status-badge.danger { background:#fecaca; color:#dc2626; }
+
+    /* ===== پنل شخصی‌سازی ===== */
+    .customize-panel {
+      position:fixed; bottom:30px; right:30px; background:#fff; border-radius:20px;
+      box-shadow:0 20px 60px rgba(0,0,0,0.15); padding:18px 22px; z-index:9998;
+      width:280px; border:1px solid #e9edf4; transition:0.3s; cursor:grab;
+      user-select:none; backdrop-filter:blur(20px);
+    }
+    .customize-panel:active { cursor:grabbing; }
+    .customize-panel h4 { font-size:1rem; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+    .customize-panel .color-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+    .customize-panel .color-dot {
+      width:30px; height:30px; border-radius:50%; cursor:pointer;
+      border:3px solid transparent; transition:0.25s;
+    }
+    .customize-panel .color-dot:hover { transform:scale(1.15); }
+    .customize-panel .color-dot.active { border-color:#1e293b; transform:scale(1.1); }
+    body.dark-mode .customize-panel .color-dot.active { border-color:#e8edf5; }
+    .customize-panel .setting-row {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:5px 0; border-bottom:1px solid #f1f5f9; font-size:0.85rem;
+    }
+    .customize-panel .close-panel {
+      position:absolute; top:8px; left:12px; background:transparent; border:none;
+      font-size:1.1rem; cursor:pointer; color:#94a3b8; transition:0.2s;
+    }
+    .customize-panel .close-panel:hover { color:#ef4444; transform:rotate(90deg); }
+    .customize-panel .drag-hint { font-size:0.6rem; color:#94a3b8; text-align:center; margin-top:8px; opacity:0.6; }
+
+    /* ===== فوتر ===== */
+    footer {
+      padding:16px 35px; color:#94a3b8; font-size:0.75rem; border-top:1px solid #e9edf4;
+      background:#fff; margin-top:8px; display:flex; justify-content:space-between; flex-wrap:wrap;
+    }
+
+    /* ===== واکنش‌گرایی ===== */
+    @media (max-width:1200px) {
+      .main-grid { grid-template-columns:1fr; max-width:100%; }
+      .right-panel { display:grid; grid-template-columns:1fr 1fr; }
+      .stats-grid { grid-template-columns:repeat(2,1fr); }
+    }
+    @media (max-width:768px) {
+      .main-grid { padding:16px; }
+      .stats-grid { grid-template-columns:1fr; }
+      .middle-widgets { grid-template-columns:1fr; }
+      .right-panel { grid-template-columns:1fr; }
+      .header { flex-direction:column; align-items:stretch; gap:12px; padding:16px; }
+      .header-actions { flex-wrap:wrap; }
+      .sidebar { display:none; }
+      .lang-toggle { top:10px; left:10px; padding:6px 14px; font-size:0.7rem; }
+      .customize-panel { width:240px; right:10px; bottom:10px; }
+    }
+    body.ltr { direction:ltr; text-align:left; }
+    body.ltr .menu-item { justify-content:flex-start; }
+    body.ltr .header-brand h1 i { margin-left:0; margin-right:10px; }
+    body.ltr .lang-toggle { left:auto; right:20px; }
+    body.ltr .lang-toggle i { transform:scaleX(-1); }
+    body.ltr th { text-align:left; }
+    body.ltr td { text-align:left; }
+    body.ltr .customize-panel { right:auto; left:30px; }
+    body.ltr .customize-panel .close-panel { left:auto; right:12px; }
+    body.ltr .menu-item .badge-menu { right:auto; left:12px; }
+
+    /* ===== انیمیشن‌ها ===== */
+    @keyframes float {
+      0%,100% { transform:translateY(0); }
+      50% { transform:translateY(-6px); }
+    }
+    .float-anim { animation:float 3s ease-in-out infinite; }
+  </style>
+</head>
+<body>
+
+  <!-- ===== دکمه تغییر زبان ===== -->
+  <button class="lang-toggle" id="langToggleBtn">
+    <i class="fas fa-globe"></i> <span id="langLabel">English</span>
+  </button>
+
+  <!-- ===== پنل شخصی‌سازی ===== -->
+  <div class="customize-panel" id="customPanel">
+    <button class="close-panel" id="closeCustomPanel"><i class="fas fa-times"></i></button>
+    <h4><i class="fas fa-palette" style="color:#3b82f6;"></i> <span data-key="customTitle">شخصی‌سازی</span></h4>
+    <div class="color-row" id="themeColors">
+      <div class="color-dot active" style="background:#3b82f6;" data-theme="blue" title="آبی"></div>
+      <div class="color-dot" style="background:#22c55e;" data-theme="green" title="سبز"></div>
+      <div class="color-dot" style="background:#8b5cf6;" data-theme="purple" title="بنفش"></div>
+      <div class="color-dot" style="background:#f43f5e;" data-theme="rose" title="رز"></div>
+      <div class="color-dot" style="background:#f59e0b;" data-theme="amber" title="کهربایی"></div>
+      <div class="color-dot" style="background:#64748b;" data-theme="default" title="پیش‌فرض"></div>
+    </div>
+    <div class="setting-row">
+      <span><i class="fas fa-moon"></i> <span data-key="darkModeLabel">حالت تاریک</span></span>
+      <div class="toggle-switch" id="darkModeToggle"></div>
+    </div>
+    <div class="drag-hint"><i class="fas fa-arrows-alt"></i> <span data-key="dragHint">برای جابجایی بکشید</span></div>
+  </div>
+
+  <!-- ===== هدر جدید ===== -->
+  <header class="header">
+    <div class="header-brand">
+      <div class="logo">C</div>
+      <div>
+        <h1>CRM<span>.</span></h1>
+        <small data-key="headerSub">مدیریت حرفه‌ای مشتریان</small>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="جستجو ...">
+      </div>
+      <i class="fas fa-bell" style="color:#94a3b8;font-size:1.2rem;cursor:pointer;position:relative;">
+        <span style="position:absolute;top:-4px;right:-6px;background:#ef4444;color:#fff;font-size:0.5rem;padding:2px 6px;border-radius:50%;">4</span>
+      </i>
+      <div class="avatar"><i class="fas fa-user"></i></div>
+      <span style="color:#1e293b;font-weight:500;font-size:0.9rem;" id="userName">امیررضا</span>
+    </div>
+  </header>
+
+  <!-- ===== شبکه اصلی ===== -->
+  <div class="main-grid">
+
+    <!-- ===== سایدبار ===== -->
+    <aside class="sidebar">
+      <div class="menu-item active" data-tab="dashboard"><i class="fas fa-th-large"></i> <span data-key="menuDashboard">داشبورد</span></div>
+      <div class="menu-item" data-tab="customers"><i class="fas fa-users"></i> <span data-key="menuCustomers">مشتریان</span> <span class="badge-menu">۱٫۲K</span></div>
+      <div class="menu-item" data-tab="analytics"><i class="fas fa-chart-line"></i> <span data-key="menuAnalytics">تحلیل</span></div>
+      <div class="menu-item" data-tab="calendar"><i class="fas fa-calendar-alt"></i> <span data-key="menuCalendar">تقویم</span></div>
+      <div class="divider"></div>
+      <div class="menu-label" data-key="menuLabelManage">مدیریت</div>
+      <div class="menu-item" data-tab="invoices"><i class="fas fa-file-invoice"></i> <span data-key="menuInvoices">فاکتورها</span></div>
+      <div class="menu-item" data-tab="tasks"><i class="fas fa-tasks"></i> <span data-key="menuTasks">وظایف</span> <span class="badge-menu" style="background:#f59e0b;">۶</span></div>
+      <div class="menu-item" data-tab="team"><i class="fas fa-user-friends"></i> <span data-key="menuTeam">تیم</span></div>
+      <div class="menu-item" data-tab="settings"><i class="fas fa-cog"></i> <span data-key="menuSettings">تنظیمات</span></div>
+      <div class="divider"></div>
+      <div class="menu-item" data-tab="logout"><i class="fas fa-sign-out-alt"></i> <span data-key="menuLogout">خروج</span></div>
+    </aside>
+
+    <!-- ===== بخش مرکزی ===== -->
+    <div class="content">
+
+      <!-- ===== تب داشبورد ===== -->
+      <div class="tab-content active" id="tab-dashboard">
+
+        <!-- آمار -->
+        <div class="stats-grid">
+          <div class="stats-card">
+            <div class="stats-top">
+              <div><div class="stat-title" data-key="statCustomers">تعداد مشتریان</div><div class="stat-number">۱٬۲۴۳</div></div>
+              <div class="stats-icon blue"><i class="fas fa-users"></i></div>
+            </div>
+            <span class="stat-change up"><i class="fas fa-arrow-up"></i> ۱۲.۴٪</span>
+          </div>
+          <div class="stats-card">
+            <div class="stats-top">
+              <div><div class="stat-title" data-key="statSales">فروش امروز</div><div class="stat-number">۴۲.۸M</div></div>
+              <div class="stats-icon green"><i class="fas fa-dollar-sign"></i></div>
+            </div>
+            <span class="stat-change up"><i class="fas fa-arrow-up"></i> ۸.۲٪</span>
+          </div>
+          <div class="stats-card">
+            <div class="stats-top">
+              <div><div class="stat-title" data-key="statVisitors">بازدیدکنندگان</div><div class="stat-number">۸۷۴</div></div>
+              <div class="stats-icon purple"><i class="fas fa-eye"></i></div>
+            </div>
+            <span class="stat-change down"><i class="fas fa-arrow-down"></i> ۲.۱٪</span>
+          </div>
+          <div class="stats-card">
+            <div class="stats-top">
+              <div><div class="stat-title" data-key="statConversion">نرخ تبدیل</div><div class="stat-number">۳.۶٪</div></div>
+              <div class="stats-icon orange"><i class="fas fa-percent"></i></div>
+            </div>
+            <span class="stat-change up"><i class="fas fa-arrow-up"></i> ۰.۴٪</span>
+          </div>
+        </div>
+
+        <!-- ویجت‌های میانی -->
+        <div class="middle-widgets">
+          <div class="widget">
+            <h3><i class="fas fa-chart-bar" style="color:#3b82f6;"></i> <span data-key="weeklySales">فروش هفتگی</span></h3>
+            <div class="chart-placeholder">
+              <div class="chart-bar" style="height:40px;"></div>
+              <div class="chart-bar" style="height:65px;"></div>
+              <div class="chart-bar" style="height:50px;"></div>
+              <div class="chart-bar" style="height:85px;"></div>
+              <div class="chart-bar" style="height:70px;"></div>
+              <div class="chart-bar" style="height:95px;"></div>
+              <div class="chart-bar" style="height:55px;"></div>
+              <div class="chart-bar" style="height:80px;"></div>
+              <div class="chart-bar" style="height:100px;"></div>
+              <div class="chart-bar" style="height:45px;"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:0.65rem;color:#94a3b8;margin-top:6px;">
+              <span>ش</span><span>ی</span><span>د</span><span>س</span><span>چ</span><span>پ</span><span>ج</span><span>ش</span><span>ی</span><span>د</span>
+            </div>
+          </div>
+          <div class="widget">
+            <h3><i class="fas fa-bolt" style="color:#f59e0b;"></i> <span data-key="recentActivities">فعالیت‌ها</span></h3>
+            <div class="activity-item"><span class="activity-dot blue"></span><span class="activity-text" data-key="act1">مشتری جدید: علی</span><span class="activity-time">۵د</span></div>
+            <div class="activity-item"><span class="activity-dot green"></span><span class="activity-text" data-key="act2">قرارداد #۱۲۴۵</span><span class="activity-time">۲س</span></div>
+            <div class="activity-item"><span class="activity-dot orange"></span><span class="activity-text" data-key="act3">تماس با آذین</span><span class="activity-time">۴س</span></div>
+            <div class="activity-item"><span class="activity-dot purple"></span><span class="activity-text" data-key="act4">خبرنامه ۴۵۰ نفر</span><span class="activity-time">دیروز</span></div>
+            <div class="activity-item"><span class="activity-dot red"></span><span class="activity-text" data-key="act5">پروژه جدید</span><span class="activity-time">دیروز</span></div>
+          </div>
+        </div>
+
+        <!-- جدول -->
+        <div class="table-wrap">
+          <div class="table-header">
+            <h3 style="font-size:1rem;font-weight:600;color:#1e293b;"><i class="fas fa-list" style="color:#3b82f6;"></i> <span data-key="recentClients">مشتریان اخیر</span></h3>
+            <span class="badge" style="background:#eef2ff;padding:4px 16px;border-radius:40px;font-size:0.7rem;color:#1e4f8a;"><i class="fas fa-sync"></i> <span data-key="autoUpdate">بروزرسانی</span></span>
+          </div>
+          <table>
+            <thead><tr><th data-key="thName">نام</th><th data-key="thCompany">شرکت</th><th data-key="thStatus">وضعیت</th><th data-key="thAmount">مبلغ</th></tr></thead>
+            <tbody>
+              <tr><td>سارا حسینی</td><td>آرتین تک</td><td><span class="status-badge active" data-key="statusActive">فعال</span></td><td>۱۲.۴M</td></tr>
+              <tr><td>محمد رضایی</td><td>صنایع البرز</td><td><span class="status-badge pending" data-key="statusPending">در انتظار</span></td><td>۸.۲M</td></tr>
+              <tr><td>زهرا کریمی</td><td>کیان دیجیتال</td><td><span class="status-badge active" data-key="statusActive">فعال</span></td><td>۲۳.۷M</td></tr>
+              <tr><td>رضا نوروزی</td><td>نوآوران سبز</td><td><span class="status-badge inactive" data-key="statusInactive">غیرفعال</span></td><td>۳.۲M</td></tr>
+              <tr><td>مریم جعفری</td><td>سامانه‌های هوشمند</td><td><span class="status-badge active" data-key="statusActive">فعال</span></td><td>۱۸.۹M</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ===== تب مشتریان ===== -->
+      <div class="tab-content" id="tab-customers">
+        <div class="stats-grid">
+          <div class="stats-card"><div class="stats-top"><div><div class="stat-title" data-key="totalCustomers">کل مشتریان</div><div class="stat-number">۱٬۲۴۳</div></div><div class="stats-icon blue"><i class="fas fa-users"></i></div></div><span class="stat-change up"><i class="fas fa-arrow-up"></i> ۵.۳٪</span></div>
+          <div class="stats-card"><div class="stats-top"><div><div class="stat-title" data-key="newThisMonth">جدید این ماه</div><div class="stat-number">۸۴</div></div><div class="stats-icon green"><i class="fas fa-user-plus"></i></div></div><span class="stat-change up"><i class="fas fa-arrow-up"></i> ۱۸.۲٪</span></div>
+          <div class="stats-card"><div class="stats-top"><div><div class="stat-title" data-key="activeCustomers">مشتریان فعال</div><div class="stat-number">۷۹۲</div></div><div class="stats-icon purple"><i class="fas fa-user-check"></i></div></div><span class="stat-change up"><i class="fas fa-arrow-up"></i> ۳.۱٪</span></div>
+          <div class="stats-card"><div class="stats-top"><div><div class="stat-title" data-key="churnRate">نرخ ریزش</div><div class="stat-number">۲.۱٪</div></div><div class="stats-icon orange"><i class="fas fa-user-slash"></i></div></div><span class="stat-change down"><i class="fas fa-arrow-down"></i> ۰.۳٪</span></div>
+        </div>
+        <div class="widget">
+          <h3><i class="fas fa-address-book" style="color:#3b82f6;"></i> <span data-key="allCustomersList">لیست کامل مشتریان</span></h3>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f1f5f9;"><span>احمد رستمی - <span data-key="company">شرکت</span>: فناوران سبز</span><span class="status-badge active" data-key="statusActive">فعال</span></div>
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f1f5f9;"><span>نرگس سلیمانی - <span data-key="company">شرکت</span>: طراحی نوین</span><span class="status-badge pending" data-key="statusPending">در انتظار</span></div>
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f1f5f9;"><span>پدرام کشاورز - <span data-key="company">شرکت</span>: صنایع پترو</span><span class="status-badge active" data-key="statusActive">فعال</span></div>
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f1f5f9;"><span>لیلا رضوان - <span data-key="company">شرکت</span>: مشاوران مدیریت</span><span class="status-badge inactive" data-key="statusInactive">غیرفعال</span></div>
+            <div style="display:flex;justify-content:space-between;padding:8px 0;"><span>سعید موسوی - <span data-key="company">شرکت</span>: تجارت الکترونیک</span><span class="status-badge active" data-key="statusActive">فعال</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== تب تحلیل ===== -->
+      <div class="tab-content" id="tab-analytics">
+        <div class="stats-grid">
+          <div class="stats-card"><div class="stats-top"><div><div class="stat-title">بازدید کل</div><div class="stat-number">۱۲.۴K</div></div><div class="stats-icon blue"><i class="fas fa-eye"></i></div></div><span class="stat-change up"><i class="fas fa-arrow-up"></i> ۸.۱٪</span></div>
+          <div class="stats-card"><div class="stats-top"><div><div class="stat-title">نرخ کلیک</div><div class="stat-number">۴.۲٪</div></div><div class="stats-icon green"><i class="fas fa-mouse-pointer"></i></div></div><span class="stat-change up"><i class="fas fa-arrow-up"></i> ۰.۶٪</span></div>
+          <div class="stats-card"><div class="stats-top"><div><div class="stat-title">نرخ بازگشت</div><div class="stat-number">۲۸.۳٪</div></div><div class="stats-icon purple"><i class="fas fa-undo"></i></div></div><span class="stat-change down"><i class="fas fa-arrow-down"></i> ۱.۲٪</span></div>
+          <div class="stats-card"><div class="stats-top"><div><div class="stat-title">میانگین زمان</div><div class="stat-number">۳:۴۲</div></div><div class="stats-icon orange"><i class="fas fa-clock"></i></div></div><span class="stat-change up"><i class="fas fa-arrow-up"></i> ۰.۳٪</span></div>
+        </div>
+        <div class="widget">
+          <h3><i class="fas fa-chart-pie" style="color:#8b5cf6;"></i> <span>تحلیل فروش</span></h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;text-align:center;">
+            <div style="background:#f8fafc;padding:16px;border-radius:16px;"><div style="font-size:1.6rem;font-weight:700;color:#3b82f6;">۴۲٪</div><div style="font-size:0.7rem;color:#94a3b8;">محصولات</div></div>
+            <div style="background:#f8fafc;padding:16px;border-radius:16px;"><div style="font-size:1.6rem;font-weight:700;color:#22c55e;">۳۱٪</div><div style="font-size:0.7rem;color:#94a3b8;">خدمات</div></div>
+            <div style="background:#f8fafc;padding:16px;border-radius:16px;"><div style="font-size:1.6rem;font-weight:700;color:#f59e0b;">۲۷٪</div><div style="font-size:0.7rem;color:#94a3b8;">اشتراک</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== تب تقویم ===== -->
+      <div class="tab-content" id="tab-calendar">
+        <div class="widget" style="text-align:center;">
+          <h3><i class="fas fa-calendar-alt" style="color:#3b82f6;"></i> <span data-key="calendarView">تقویم تعاملات</span></h3>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;max-width:500px;margin:0 auto;font-size:0.85rem;">
+            <div style="font-weight:700;color:#64748b;">ش</div><div style="font-weight:700;color:#64748b;">ی</div><div style="font-weight:700;color:#64748b;">د</div>
+            <div style="font-weight:700;color:#64748b;">س</div><div style="font-weight:700;color:#64748b;">چ</div><div style="font-weight:700;color:#64748b;">پ</div><div style="font-weight:700;color:#64748b;">ج</div>
+            <div>۱</div><div>۲</div><div>۳</div><div>۴</div><div>۵</div><div>۶</div><div>۷</div>
+            <div>۸</div><div>۹</div><div>۱۰</div><div style="background:#dbeafe;border-radius:50%;font-weight:700;">۱۱</div><div>۱۲</div><div>۱۳</div><div>۱۴</div>
+            <div>۱۵</div><div style="background:#dbeafe;border-radius:50%;font-weight:700;">۱۶</div><div>۱۷</div><div>۱۸</div><div>۱۹</div><div>۲۰</div><div>۲۱</div>
+            <div>۲۲</div><div>۲۳</div><div style="background:#dbeafe;border-radius:50%;font-weight:700;">۲۴</div><div>۲۵</div><div>۲۶</div><div>۲۷</div><div>۲۸</div>
+          </div>
+          <p style="margin-top:12px;font-size:0.8rem;color:#94a3b8;" data-key="calendarNote">رویدادها با رنگ آبی مشخص شده‌اند</p>
+        </div>
+      </div>
+
+      <!-- ===== تب فاکتورها ===== -->
+      <div class="tab-content" id="tab-invoices">
+        <div class="table-wrap">
+          <h3 style="font-size:1rem;font-weight:600;margin-bottom:12px;"><i class="fas fa-file-invoice" style="color:#3b82f6;"></i> <span data-key="invoicesList">فاکتورهای اخیر</span></h3>
+          <table><thead><tr><th data-key="invNumber">شماره</th><th data-key="invCustomer">مشتری</th><th data-key="invDate">تاریخ</th><th data-key="invTotal">مبلغ</th><th data-key="invStatus">وضعیت</th></tr></thead>
+            <tbody><tr><td>#۱۲۴۵</td><td>علی محمدی</td><td>۱۴۰۵/۰۲/۱۰</td><td>۱۲.۴M</td><td><span class="status-badge active">پرداخت</span></td></tr>
+            <tr><td>#۱۲۴۶</td><td>سارا حسینی</td><td>۱۴۰۵/۰۲/۱۲</td><td>۸.۲M</td><td><span class="status-badge pending">در انتظار</span></td></tr>
+            <tr><td>#۱۲۴۷</td><td>مریم جعفری</td><td>۱۴۰۵/۰۲/۱۴</td><td>۲۳.۷M</td><td><span class="status-badge active">پرداخت</span></td></tr>
+            <tr><td>#۱۲۴۸</td><td>محمد رضایی</td><td>۱۴۰۵/۰۲/۱۶</td><td>۵.۸M</td><td><span class="status-badge danger">لغو</span></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+
+      <!-- ===== تب وظایف ===== -->
+      <div class="tab-content" id="tab-tasks">
+        <div class="widget">
+          <h3><i class="fas fa-tasks" style="color:#3b82f6;"></i> <span data-key="tasksList">وظایف روزانه</span></h3>
+          <div class="task-item"><div class="task-check done"><i class="fas fa-check"></i></div><span class="task-text done" data-key="task1">تماس با مشتریان جدید</span><span class="task-priority high">بالا</span></div>
+          <div class="task-item"><div class="task-check"></div><span class="task-text" data-key="task2">بروزرسانی پایگاه داده</span><span class="task-priority medium">متوسط</span></div>
+          <div class="task-item"><div class="task-check"></div><span class="task-text" data-key="task3">تهیه گزارش هفتگی</span><span class="task-priority low">کم</span></div>
+          <div class="task-item"><div class="task-check"></div><span class="task-text" data-key="task4">بازنویسی مستندات</span><span class="task-priority medium">متوسط</span></div>
+          <div class="task-item"><div class="task-check"></div><span class="task-text" data-key="task5">جلسه تیم فروش</span><span class="task-priority high">بالا</span></div>
+        </div>
+      </div>
+
+      <!-- ===== تب تیم ===== -->
+      <div class="tab-content" id="tab-team">
+        <div class="widget">
+          <h3><i class="fas fa-user-friends" style="color:#3b82f6;"></i> <span data-key="teamTitle">اعضای تیم</span></h3>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #f1f5f9;"><div style="width:36px;height:36px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;">ع</div><div><div style="font-weight:600;">علی رضایی</div><div style="font-size:0.75rem;color:#94a3b8;">مدیر فروش</div></div><span class="status-badge active" style="font-size:0.6rem;">آنلاین</span></div>
+            <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #f1f5f9;"><div style="width:36px;height:36px;border-radius:50%;background:#22c55e;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;">س</div><div><div style="font-weight:600;">سارا محمدی</div><div style="font-size:0.75rem;color:#94a3b8;">بازاریابی</div></div><span class="status-badge pending" style="font-size:0.6rem;">مشغول</span></div>
+            <div style="display:flex;align-items:center;gap:12px;padding:8px 0;"><div style="width:36px;height:36px;border-radius:50%;background:#8b5cf6;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;">م</div><div><div style="font-weight:600;">مهدی کریمی</div><div style="font-size:0.75rem;color:#94a3b8;">توسعه‌دهنده</div></div><span class="status-badge active" style="font-size:0.6rem;">آنلاین</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== تب تنظیمات ===== -->
+      <div class="tab-content" id="tab-settings">
+        <div class="widget">
+          <h3><i class="fas fa-cog" style="color:#3b82f6;"></i> <span data-key="settingsTitle">تنظیمات</span></h3>
+          <div class="settings-row" style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f5f9;"><span data-key="settingLang">زبان پیش‌فرض</span><span>فارسی / English</span></div>
+          <div class="settings-row" style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f5f9;"><span data-key="settingNotif">اعلان‌های ایمیل</span><div class="toggle-switch active" id="toggleNotif" style="width:40px;height:20px;background:#cbd5e1;border-radius:40px;position:relative;cursor:pointer;transition:0.2s;"></div></div>
+          <div class="settings-row" style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f5f9;"><span data-key="settingExport">خروجی داده‌ها</span><span><i class="fas fa-file-export"></i> <span data-key="exportExcel">اکسل</span> | <span data-key="exportPDF">PDF</span></span></div>
+          <div class="settings-row" style="display:flex;justify-content:space-between;padding:10px 0;"><span data-key="settingBackup">پشتیبان‌گیری خودکار</span><div class="toggle-switch active" style="width:40px;height:20px;background:#cbd5e1;border-radius:40px;position:relative;cursor:pointer;transition:0.2s;"></div></div>
+        </div>
+      </div>
+
+      <!-- ===== تب خروج ===== -->
+      <div class="tab-content" id="tab-logout">
+        <div class="widget" style="text-align:center;padding:40px;">
+          <i class="fas fa-sign-out-alt" style="font-size:4rem;color:#ef4444;opacity:0.4;"></i>
+          <h3 style="margin:16px 0;" data-key="logoutConfirm">آیا از خروج اطمینان دارید؟</h3>
+          <button style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none;padding:12px 40px;border-radius:50px;font-size:1rem;cursor:pointer;box-shadow:0 8px 24px rgba(239,68,68,0.3);">خروج</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===== پنل راست (ویجت‌های جانبی) ===== -->
+    <div class="right-panel">
+
+      <!-- تقویم کوچک -->
+      <div class="widget mini-calendar">
+        <div class="month-label">مرداد ۱۴۰۵</div>
+        <div class="days">
+          <div>ش</div><div>ی</div><div>د</div><div>س</div><div>چ</div><div>پ</div><div>ج</div>
+          <div>۱</div><div>۲</div><div>۳</div><div>۴</div><div>۵</div><div>۶</div><div>۷</div>
+          <div>۸</div><div>۹</div><div>۱۰</div><div class="active">۱۱</div><div>۱۲</div><div>۱۳</div><div>۱۴</div>
+          <div>۱۵</div><div class="active">۱۶</div><div>۱۷</div><div>۱۸</div><div>۱۹</div><div>۲۰</div><div>۲۱</div>
+        </div>
+      </div>
+
+      <!-- تگ‌ها -->
+      <div class="widget">
+        <h3 style="font-size:0.9rem;"><i class="fas fa-tags" style="color:#8b5cf6;"></i> <span>برچسب‌ها</span></h3>
+        <div class="tags">
+          <span class="tag">#VIP</span>
+          <span class="tag">#شرکتی</span>
+          <span class="tag">#تخفیف</span>
+          <span class="tag">#جدید</span>
+          <span class="tag">#پلتفرم</span>
+          <span class="tag">#فروش</span>
+          <span class="tag">#پشتیبانی</span>
+        </div>
+      </div>
+
+      <!-- آمار سریع -->
+      <div class="widget">
+        <h3 style="font-size:0.9rem;"><i class="fas fa-chart-simple" style="color:#f59e0b;"></i> <span>آمار سریع</span></h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <div style="background:#f8fafc;padding:10px;border-radius:12px;text-align:center;"><div style="font-size:0.6rem;color:#94a3b8;" data-key="qsToday">امروز</div><div style="font-weight:700;">۸۴</div></div>
+          <div style="background:#f8fafc;padding:10px;border-radius:12px;text-align:center;"><div style="font-size:0.6rem;color:#94a3b8;" data-key="qsWeek">هفته</div><div style="font-weight:700;">۳۲۱</div></div>
+          <div style="background:#f8fafc;padding:10px;border-radius:12px;text-align:center;"><div style="font-size:0.6rem;color:#94a3b8;" data-key="qsMonth">ماه</div><div style="font-weight:700;">۱٬۲۰۴</div></div>
+          <div style="background:#f8fafc;padding:10px;border-radius:12px;text-align:center;"><div style="font-size:0.6rem;color:#94a3b8;" data-key="qsAvg">میانگین</div><div style="font-weight:700;">۱٬۱۸۷</div></div>
+        </div>
+      </div>
+
+      <!-- وضعیت سیستم -->
+      <div class="widget">
+        <h3 style="font-size:0.9rem;"><i class="fas fa-server" style="color:#22c55e;"></i> <span>وضعیت سیستم</span></h3>
+        <div style="display:flex;flex-direction:column;gap:4px;font-size:0.8rem;">
+          <div style="display:flex;justify-content:space-between;"><span>سرور</span><span style="color:#22c55e;"><i class="fas fa-circle" style="font-size:0.4rem;"></i> فعال</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>پایگاه داده</span><span style="color:#22c55e;"><i class="fas fa-circle" style="font-size:0.4rem;"></i> متصل</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>پشتیبان</span><span style="color:#f59e0b;"><i class="fas fa-circle" style="font-size:0.4rem;"></i> در حال اجرا</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>حافظه</span><span style="color:#3b82f6;">۶۲٪</span></div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ===== فوتر ===== -->
+  <footer>
+    <span>© ۱۴۰۵ - <span data-key="footerText">داشبورد مدرن CRM</span></span>
+    <span><i class="fas fa-code"></i> نسخه ۵.۰.۰ | <span data-key="footerStatus">همه سیستم‌ها عملیاتی</span></span>
+  </footer>
+
+  <script>
+    (function(){
+      // ===== دیکشنری =====
+      const dict = {
+        fa: {
+          headerSub:'مدیریت حرفه‌ای مشتریان',
+          menuDashboard:'داشبورد', menuCustomers:'مشتریان', menuAnalytics:'تحلیل',
+          menuCalendar:'تقویم', menuInvoices:'فاکتورها', menuTasks:'وظایف',
+          menuTeam:'تیم', menuSettings:'تنظیمات', menuLogout:'خروج',
+          menuLabelManage:'مدیریت',
+          statCustomers:'تعداد مشتریان', statSales:'فروش امروز', statVisitors:'بازدیدکنندگان', statConversion:'نرخ تبدیل',
+          weeklySales:'فروش هفتگی', recentActivities:'فعالیت‌ها',
+          act1:'مشتری جدید: علی', act2:'قرارداد #۱۲۴۵', act3:'تماس با آذین', act4:'خبرنامه ۴۵۰ نفر', act5:'پروژه جدید',
+          recentClients:'مشتریان اخیر', autoUpdate:'بروزرسانی',
+          thName:'نام', thCompany:'شرکت', thStatus:'وضعیت', thAmount:'مبلغ',
+          statusActive:'فعال', statusPending:'در انتظار', statusInactive:'غیرفعال',
+          totalCustomers:'کل مشتریان', newThisMonth:'جدید این ماه', activeCustomers:'مشتریان فعال', churnRate:'نرخ ریزش',
+          allCustomersList:'لیست کامل مشتریان', company:'شرکت',
+          calendarView:'تقویم تعاملات', calendarNote:'رویدادها با رنگ آبی مشخص شده‌اند',
+          invoicesList:'فاکتورهای اخیر', invNumber:'شماره', invCustomer:'مشتری', invDate:'تاریخ', invTotal:'مبلغ', invStatus:'وضعیت',
+          tasksList:'وظایف روزانه', task1:'تماس با مشتریان جدید', task2:'بروزرسانی پایگاه داده',
+          task3:'تهیه گزارش هفتگی', task4:'بازنویسی مستندات', task5:'جلسه تیم فروش',
+          settingsTitle:'تنظیمات', settingLang:'زبان پیش‌فرض', settingNotif:'اعلان‌های ایمیل',
+          settingExport:'خروجی داده‌ها', exportExcel:'اکسل', exportPDF:'PDF', settingBackup:'پشتیبان‌گیری خودکار',
+          logoutConfirm:'آیا از خروج اطمینان دارید؟', logoutBtn:'خروج',
+          footerText:'داشبورد مدرن CRM', footerStatus:'همه سیستم‌ها عملیاتی',
+          customTitle:'شخصی‌سازی', darkModeLabel:'حالت تاریک', dragHint:'برای جابجایی بکشید',
+          qsToday:'امروز', qsWeek:'هفته', qsMonth:'ماه', qsAvg:'میانگین', teamTitle:'اعضای تیم'
+        },
+        en: {
+          headerSub:'Professional Customer Management',
+          menuDashboard:'Dashboard', menuCustomers:'Customers', menuAnalytics:'Analytics',
+          menuCalendar:'Calendar', menuInvoices:'Invoices', menuTasks:'Tasks',
+          menuTeam:'Team', menuSettings:'Settings', menuLogout:'Logout',
+          menuLabelManage:'Management',
+          statCustomers:'Total Customers', statSales:"Today's Sales", statVisitors:'Visitors', statConversion:'Conversion Rate',
+          weeklySales:'Weekly Sales', recentActivities:'Activities',
+          act1:'New Customer: Ali', act2:'Contract #1245', act3:'Call with Azin', act4:'Newsletter 450', act5:'New Project',
+          recentClients:'Recent Clients', autoUpdate:'Update',
+          thName:'Name', thCompany:'Company', thStatus:'Status', thAmount:'Amount',
+          statusActive:'Active', statusPending:'Pending', statusInactive:'Inactive',
+          totalCustomers:'Total Customers', newThisMonth:'New This Month', activeCustomers:'Active Customers', churnRate:'Churn Rate',
+          allCustomersList:'Full Customer List', company:'Company',
+          calendarView:'Interaction Calendar', calendarNote:'Events marked in blue',
+          invoicesList:'Recent Invoices', invNumber:'Number', invCustomer:'Customer', invDate:'Date', invTotal:'Total', invStatus:'Status',
+          tasksList:'Daily Tasks', task1:'Call new customers', task2:'Update database',
+          task3:'Prepare weekly report', task4:'Rewrite docs', task5:'Sales team meeting',
+          settingsTitle:'Settings', settingLang:'Default Language', settingNotif:'Email Notifications',
+          settingExport:'Data Export', exportExcel:'Excel', exportPDF:'PDF', settingBackup:'Auto Backup',
+          logoutConfirm:'Are you sure to logout?', logoutBtn:'Logout',
+          footerText:'Modern CRM Dashboard', footerStatus:'All systems operational',
+          customTitle:'Customize', darkModeLabel:'Dark Mode', dragHint:'Drag to move',
+          qsToday:'Today', qsWeek:'Week', qsMonth:'Month', qsAvg:'Average', teamTitle:'Team Members'
+        }
+      };
+
+      let currentLang = 'fa';
+      const body = document.body;
+      const langBtn = document.getElementById('langToggleBtn');
+      const langLabel = document.getElementById('langLabel');
+
+      function setLanguage(lang) {
+        currentLang = lang;
+        if (lang === 'en') {
+          body.classList.add('ltr');
+          body.setAttribute('dir','ltr');
+          document.documentElement.lang='en';
+          langLabel.textContent='فارسی';
+        } else {
+          body.classList.remove('ltr');
+          body.setAttribute('dir','rtl');
+          document.documentElement.lang='fa';
+          langLabel.textContent='English';
+        }
+        const d = dict[lang];
+        document.querySelectorAll('[data-key]').forEach(el => {
+          const key = el.getAttribute('data-key');
+          if (d[key] !== undefined) el.textContent = d[key];
+        });
+        document.getElementById('userName').textContent = (lang==='fa')?'امیررضا':'Amirreza';
+        document.getElementById('searchInput').placeholder = (lang==='fa')?'جستجو ...':'Search ...';
+      }
+
+      langBtn.addEventListener('click', function() {
+        setLanguage(currentLang === 'fa' ? 'en' : 'fa');
+      });
+
+      // ===== مدیریت تب‌ها =====
+      const menuItems = document.querySelectorAll('.menu-item[data-tab]');
+      const tabContents = document.querySelectorAll('.tab-content');
+      function activateTab(tabId) {
+        tabContents.forEach(tc => tc.classList.remove('active'));
+        const target = document.getElementById('tab-'+tabId);
+        if (target) target.classList.add('active');
+        menuItems.forEach(item => {
+          item.classList.remove('active');
+          if (item.getAttribute('data-tab') === tabId) item.classList.add('active');
+        });
+      }
+      menuItems.forEach(item => {
+        item.addEventListener('click', function() {
+          const tabId = this.getAttribute('data-tab');
+          if (tabId === 'logout') {
+            if (confirm(currentLang==='fa'?'آیا از خروج اطمینان دارید؟':'Are you sure to logout?')) {
+              alert(currentLang==='fa'?'خروج (نمایشی)':'Logged out (demo)');
+            }
+            return;
+          }
+          activateTab(tabId);
+        });
+      });
+
+      // ===== جستجو =====
+      document.getElementById('searchInput').addEventListener('keyup', function() {
+        const filter = this.value.trim().toLowerCase();
+        document.querySelectorAll('table tbody tr').forEach(row => {
+          row.style.display = row.innerText.toLowerCase().includes(filter) ? '' : 'none';
+        });
+      });
+
+      // ===== دارک مود =====
+      const darkToggle = document.getElementById('darkModeToggle');
+      darkToggle.addEventListener('click', function() {
+        this.classList.toggle('active');
+        body.classList.toggle('dark-mode');
+      });
+
+      // ===== تم‌های رنگی =====
+      const colorDots = document.querySelectorAll('.color-dot');
+      colorDots.forEach(dot => {
+        dot.addEventListener('click', function() {
+          colorDots.forEach(d => d.classList.remove('active'));
+          this.classList.add('active');
+          const theme = this.getAttribute('data-theme');
+          ['theme-blue','theme-green','theme-purple','theme-rose','theme-amber'].forEach(cls => body.classList.remove(cls));
+          if (theme !== 'default') body.classList.add('theme-'+theme);
+        });
+      });
+
+      // ===== پنل شخصی‌سازی: کشیدن =====
+      const panel = document.getElementById('customPanel');
+      let isDragging = false, offsetX = 0, offsetY = 0;
+
+      panel.addEventListener('mousedown', function(e) {
+        if (e.target.closest('.close-panel') || e.target.closest('.color-dot') ||
+            e.target.closest('.toggle-switch')) return;
+        isDragging = true;
+        const rect = panel.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        panel.style.cursor = 'grabbing';
+        e.preventDefault();
+      });
+
+      document.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        let left = e.clientX - offsetX;
+        let top = e.clientY - offsetY;
+        left = Math.max(10, Math.min(window.innerWidth - panel.offsetWidth - 10, left));
+        top = Math.max(10, Math.min(window.innerHeight - panel.offsetHeight - 10, top));
+        panel.style.left = left + 'px';
+        panel.style.top = top + 'px';
+        panel.style.right = 'auto';
+        panel.style.bottom = 'auto';
+      });
+
+      document.addEventListener('mouseup', function() {
+        if (isDragging) { isDragging = false; panel.style.cursor = 'grab'; }
+      });
+
+      // ===== بستن پنل =====
+      document.getElementById('closeCustomPanel').addEventListener('click', function() {
+        panel.style.display = 'none';
+      });
+      document.querySelector('.header-brand').addEventListener('dblclick', function() {
+        panel.style.display = 'block';
+      });
+
+      // ===== Toggle‌ها =====
+      document.querySelectorAll('.toggle-switch:not(#darkModeToggle)').forEach(t => {
+        t.addEventListener('click', function() { this.classList.toggle('active'); });
+      });
+      // ===== Task check =====
+      document.querySelectorAll('.task-check').forEach(check => {
+        check.addEventListener('click', function() {
+          this.classList.toggle('done');
+          const text = this.closest('.task-item').querySelector('.task-text');
+          if (text) text.classList.toggle('done');
+        });
+      });
+
+      // ===== تنظیم اولیه =====
+      setLanguage('fa');
+      activateTab('dashboard');
+      console.log('✅ داشبورد مدرن جدید با موفقیت بارگذاری شد.');
+    })();
+  </script>
+</body>
+</html>
